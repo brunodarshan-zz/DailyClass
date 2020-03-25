@@ -9,11 +9,5 @@ namespace DailyClass.Controllers
 {
     [ApiController]
     [Route("/api")]
-    public class ApplicationController : ControllerBase
-    {
-        [Route("")]
-        public string Index(){
-            return "GET index";
-        }
-    }
+    public class ApplicationController : ControllerBase { }
 }
