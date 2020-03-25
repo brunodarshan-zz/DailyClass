@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using DailyClass.UserAggregate.Attributes;
 
 namespace DailyClass.UserAggregate {
-    class User {
+   public  class User {
         [Key]
         public int ID { get; set; }
 
