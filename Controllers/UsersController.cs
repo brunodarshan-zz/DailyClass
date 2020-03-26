@@ -68,13 +68,7 @@ namespace DailyClass.Controllers
             else { return NotFound(); }
         }
 
-        [HttpDelete]
-        [Route("{id:int}")]
-        public string Delete(int id){
-            return "DELETE /users";
-        }
-
-        private async Task<User> GetUserById(int id){
+         private async Task<User> GetUserById(int id){
             return await _users.FirstOrDefaultAsync(x => x.ID == id);
         }
     }
