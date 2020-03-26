@@ -22,14 +22,18 @@ namespace DailyClass.Controllers
 
         [HttpGet]
         [Route("")]
-        public string Index(){
-            return "GET /users";
+        public async Task<ActionResult<List<User>>> Index(){
+            return await _users.ToListAsync();
         }
 
         [HttpGet]
         [Route("{id:int}")]
-        public string Show(int id){
-            return "GET /users/"+id.ToString();
+        public async Task<ActionResult<User>> Show(int id){
+            var user = await _users.FirstOrDefaultAsync(x => x.ID == id);
+            if (user!=null)
+                return Ok(user);
+            else
+                return NotFound();
         }
 
         [HttpPost]
