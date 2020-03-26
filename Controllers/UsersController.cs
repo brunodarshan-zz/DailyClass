@@ -4,13 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using DailyClass.UserAggregate;
+using Microsoft.EntityFrameworkCore;
+using DailyClass.Domains.UserAggregate;
+using DailyClass.Configs;
 
 namespace DailyClass.Controllers
 {   
     [Route("[controller]")]
     public class UsersController : ApplicationController
     {   
+
+        private DbSet<User> _users;
+        public UsersController([FromServices] DataContext dbContext) {
+            _users = dbContext.Users;
+        }
+
+
         [HttpGet]
         [Route("")]
         public string Index(){
