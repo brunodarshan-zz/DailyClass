@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using DailyClass.UserAggregate;
+using DailyClass.Domains.UserAggregate;
 
-namespace DailyClass {
-    class DataContext : DbContext {
+namespace DailyClass.Configs {
+    public class DataContext : DbContext {
         public DataContext(DbContextOptions<DataContext> options) : base(options) {}
 
         public DbSet<User> Users { get; set; }
