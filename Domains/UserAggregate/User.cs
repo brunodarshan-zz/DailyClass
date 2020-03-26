@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using DailyClass.Domains.Shareds;
 using DailyClass.Domains.UserAggregate.Attributes;
 
 namespace DailyClass.Domains.UserAggregate {
-   public  class User {
+   public  class User : IEntity {
         [Key]
         public int ID { get; set; }
 

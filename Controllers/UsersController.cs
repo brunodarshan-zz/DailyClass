@@ -13,17 +13,16 @@ namespace DailyClass.Controllers
     [Route("[controller]")]
     public class UsersController : ApplicationController
     {   
-
-        private DbSet<User> _users;
+        private DataContext _context;
         
         public UsersController([FromServices] DataContext dbContext) {
-            _users = dbContext.Users;
+            _context = dbContext;
         }
 
         [HttpGet]
         [Route("")]
         public async Task<ActionResult<List<User>>> Index(){
-            return await _users.ToListAsync();
+            return await new UsersRepository(_context).All();
         }
 
         [HttpGet]
@@ -43,8 +42,7 @@ namespace DailyClass.Controllers
             [FromServices] DataContext dbContext )
             {
             if(ModelState.IsValid) {
-                _users.Add(model);
-                await dbContext.SaveChangesAsync();
+                await new UsersRepository(_context).Create(model);
                 return Ok(model);
             }
 
@@ -61,15 +59,16 @@ namespace DailyClass.Controllers
             if (id != model.ID){ return NotFound(); }
             else if (!ModelState.IsValid){ return BadRequest(ModelState); }
             else if(await GetUserById(id) != null){
-                dbContext.Entry<User>(model).State = EntityState.Modified;
-                await dbContext.SaveChangesAsync();
+                await new UsersRepository(_context).Update(model);
+                // dbContext.Entry<User>(model).State = EntityState.Modified;
+                // await dbContext.SaveChangesAsync();
                 return Ok(model);
             }
             else { return NotFound(); }
         }
 
          private async Task<User> GetUserById(int id){
-            return await _users.FirstOrDefaultAsync(x => x.ID == id);
+            return await new UsersRepository(_context).Get(id);
         }
     }
 }
