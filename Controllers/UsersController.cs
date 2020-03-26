@@ -20,7 +20,6 @@ namespace DailyClass.Controllers
             _users = dbContext.Users;
         }
 
-
         [HttpGet]
         [Route("")]
         public async Task<ActionResult<List<User>>> Index(){
@@ -30,7 +29,7 @@ namespace DailyClass.Controllers
         [HttpGet]
         [Route("{id:int}")]
         public async Task<ActionResult<User>> Show(int id){
-            var user = await _users.FirstOrDefaultAsync(x => x.ID == id);
+            var user = await GetUserById(id);
             if (user!=null)
                 return Ok(user);
             else
@@ -54,14 +53,29 @@ namespace DailyClass.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
-        public string Update(int id, [FromBody] User model){
-            return "PUT /users";
+        public async Task<ActionResult<User>> Update(
+            int id,
+            [FromBody] User model,
+            [FromServices] DataContext dbContext)
+        {
+            if (id != model.ID){ return NotFound(); }
+            else if (!ModelState.IsValid){ return BadRequest(ModelState); }
+            else if(await GetUserById(id) != null){
+                dbContext.Entry<User>(model).State = EntityState.Modified;
+                await dbContext.SaveChangesAsync();
+                return Ok(model);
+            }
+            else { return NotFound(); }
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public string Delete(int id){
             return "DELETE /users";
+        }
+
+        private async Task<User> GetUserById(int id){
+            return await _users.FirstOrDefaultAsync(x => x.ID == id);
         }
     }
 }
