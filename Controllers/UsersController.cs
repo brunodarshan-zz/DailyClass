@@ -15,6 +15,7 @@ namespace DailyClass.Controllers
     {   
 
         private DbSet<User> _users;
+        
         public UsersController([FromServices] DataContext dbContext) {
             _users = dbContext.Users;
         }
@@ -38,8 +39,17 @@ namespace DailyClass.Controllers
 
         [HttpPost]
         [Route("")]
-        public string Create(){
-            return "POST /users";
+        public async Task<ActionResult<User>> Create(
+            [FromBody] User model, 
+            [FromServices] DataContext dbContext )
+            {
+            if(ModelState.IsValid) {
+                _users.Add(model);
+                await dbContext.SaveChangesAsync();
+                return Ok(model);
+            }
+
+            return BadRequest(ModelState);
         }
 
         [HttpPut]
