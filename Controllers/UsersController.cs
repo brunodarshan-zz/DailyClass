@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using DailyClass.Domains.UserAggregate;
+using DailyClass.Domains.Shareds;
 using DailyClass.Configs;
 
 namespace DailyClass.Controllers
@@ -13,22 +14,22 @@ namespace DailyClass.Controllers
     [Route("[controller]")]
     public class UsersController : ApplicationController
     {   
-        private DataContext _context;
+        private UsersRepository _rep;
         
         public UsersController([FromServices] DataContext dbContext) {
-            _context = dbContext;
+            _rep = new UsersRepository(dbContext);
         }
 
         [HttpGet]
         [Route("")]
         public async Task<ActionResult<List<User>>> Index(){
-            return await new UsersRepository(_context).All();
+            return await _rep.All();
         }
 
         [HttpGet]
         [Route("{id:int}")]
         public async Task<ActionResult<User>> Show(int id){
-            var user = await GetUserById(id);
+            var user = await _rep.Get(id);
             if (user!=null)
                 return Ok(user);
             else
@@ -42,7 +43,7 @@ namespace DailyClass.Controllers
             [FromServices] DataContext dbContext )
             {
             if(ModelState.IsValid) {
-                await new UsersRepository(_context).Create(model);
+                await _rep.Create(model);
                 return Ok(model);
             }
 
@@ -56,19 +57,18 @@ namespace DailyClass.Controllers
             [FromBody] User model,
             [FromServices] DataContext dbContext)
         {
-            if (id != model.ID){ return NotFound(); }
+            if (id != model.id){ return NotFound(); }
             else if (!ModelState.IsValid){ return BadRequest(ModelState); }
-            else if(await GetUserById(id) != null){
-                await new UsersRepository(_context).Update(model);
-                // dbContext.Entry<User>(model).State = EntityState.Modified;
-                // await dbContext.SaveChangesAsync();
-                return Ok(model);
-            }
-            else { return NotFound(); }
-        }
+            
 
-         private async Task<User> GetUserById(int id){
-            return await new UsersRepository(_context).Get(id);
+            try {
+                await _rep.Update(model);
+                return Ok(model);              
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest(new { message = "Falha ao atualizar dados"});
+            }
         }
     }
 }

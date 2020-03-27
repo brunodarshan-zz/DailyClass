@@ -24,7 +24,7 @@ namespace DailyClass.Domains.UserAggregate
         }
 
         public async Task<User> Get(int value) {
-           return await _context.Users.FirstOrDefaultAsync(x => x.ID == value); 
+           return await _context.Users.FirstOrDefaultAsync(x => x.id == value); 
         }
 
         public async Task<User> Update(User model){

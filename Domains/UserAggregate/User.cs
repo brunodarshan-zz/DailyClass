@@ -5,7 +5,7 @@ using DailyClass.Domains.UserAggregate.Attributes;
 namespace DailyClass.Domains.UserAggregate {
    public  class User : IEntity {
         [Key]
-        public int ID { get; set; }
+        public int id { get; set; }
 
         [Required(ErrorMessage="Nome campo é obrigatório")]
         public string Name { get; set; }
